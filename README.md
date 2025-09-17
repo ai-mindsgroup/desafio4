@@ -1,69 +1,148 @@
-# Projeto de Automação de Benefícios de RH com IA
+# 🤖 Projeto de Automação de Benefícios de RH com IA
 
-## Visão Geral
+![Status](https://img.shields.io/badge/status-ativo-green)
+![Python Version](https://img.shields.io/badge/python-3.9+-blue)
+![License](https://img.shields.io/badge/license-MIT-purple)
 
-Este projeto automatiza o processo de cálculo de benefícios de Vale-Refeição (VR) para funcionários, desde a extração e limpeza de dados de várias fontes de planilhas até a consolidação, análise com IA para aplicar regras de negócio e, finalmente, a exportação dos resultados para uma planilha formatada. A solução foi projetada para ser modular, configurável e robusta, utilizando um banco de dados PostgreSQL para gerenciamento de dados e a API Gemini do Google para lógica de negócios complexa.
+## 🎯 Visão Geral
 
-## Fluxo de Trabalho
+Este projeto automatiza o cálculo de benefícios de **Vale-Refeição (VR)** para funcionários, orquestrando um pipeline completo de ponta a ponta. A solução extrai dados de múltiplas planilhas, realiza a limpeza e padronização, sincroniza com um banco de dados **PostgreSQL** e utiliza a **API Gemini do Google** para aplicar regras de negócio complexas, identificando funcionários elegíveis e calculando os valores devidos. Ao final, gera um relatório consolidado em uma planilha Excel formatada.
 
-O processo de ponta a ponta é orquestrado da seguinte forma:
+## ✨ Principais Funcionalidades
 
-1.  **Download e Extração de Dados**: O sistema baixa um arquivo .zip de um URL especificado, o extrai e padroniza os nomes dos arquivos de planilha resultantes.
-2.  **Limpeza de Nomes de Colunas**: As colunas em cada planilha são limpas e padronizadas para garantir a consistência para o processamento do banco de dados.
-3.  **Sincronização com o Banco de Dados**: As planilhas limpas são usadas para criar tabelas em um banco de dados PostgreSQL. Os dados de cada planilha são então inseridos nas tabelas correspondentes.
-4.  **Consolidação de Dados**: Os dados de várias tabelas são consolidados em uma única tabela principal, unindo informações de funcionários ativos, de férias, demitidos e recém-contratados.
-5.  **Análise e Exclusão com IA**: Um agente de IA (Gemini) analisa os dados consolidados com base em regras predefinidas (por exemplo, excluindo diretores, estagiários ou funcionários em licença) e identifica os funcionários que não são elegíveis para o benefício. Esses registros são então removidos da tabela consolidada.
-6.  **Geração de SQL com IA para Cálculo de Benefícios**: Um segundo agente de IA gera uma consulta SQL para calcular os valores do benefício de VR para os funcionários elegíveis restantes. Esta consulta insere os resultados em uma tabela `vr_mensal`.
-7.  **Exportação de Dados**: Os dados finais da tabela `vr_mensal` são exportados para uma nova planilha do Excel, que é baseada em um modelo predefinido, preenchendo os valores calculados e resumindo o custo total.
+* **Extração Automatizada**: Baixa e descompacta arquivos `.zip` de fontes externas.
+* **Limpeza e Padronização**: Higieniza nomes de colunas e prepara os dados para processamento.
+* **Gerenciamento de Dados Robusto**: Utiliza PostgreSQL para persistência e consulta dos dados.
+* **Inteligência Artificial Aplicada**: Emprega a API Gemini para interpretar regras de negócio e gerar consultas SQL dinâmicas.
+* **Exportação de Relatórios**: Gera planilhas Excel formatadas e prontas para uso.
+* **Design Modular**: Arquitetura baseada em classes com responsabilidades bem definidas.
 
-## Módulos e Classes
+## 🛠️ Tecnologias Utilizadas
 
-O projeto é dividido em várias classes, cada uma com uma responsabilidade específica:
+<div align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas" />
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/Google_Gemini-8E44AD?style=for-the-badge&logo=google&logoColor=white" alt="Google Gemini" />
+  <img src="https://img.shields.io/badge/Microsoft_Excel-217346?style=for-the-badge&logo=microsoft-excel&logoColor=white" alt="Excel" />
+</div>
 
-| Classe | Descrição |
-| :--- | :--- |
-| `ZipDownloader` | Responsável por baixar, extrair e limpar os nomes das planilhas de um arquivo zip. |
-| `DatabaseConfig` | Gerencia a configuração da conexão com o banco de dados (host, nome do banco, usuário, senha, porta). |
-| `DBUtils` | Fornece funções de utilidade para interagir com o banco de dados, como verificar a existência de tabelas, descartar tabelas e executar consultas SQL. |
-| `ColumnNameCleaner` | Carrega planilhas do Excel, limpa e padroniza os nomes de suas colunas e salva as planilhas limpas em um novo diretório. |
-| `DataSync` | Sincroniza os dados das planilhas do Excel com o banco de dados PostgreSQL, criando tabelas e inserindo os dados. |
-| `DataConsolidator`| Consolida dados de várias tabelas em uma única tabela (`consolidado`) e prepara o ambiente do banco de dados para os cálculos. |
-| `DataFrameConsolidado` | Um componente para encapsular o acesso ao dataframe da tabela `consolidado` no banco de dados. |
-| `GeminiAgent` | Um cliente para interagir com a API generativa de IA do Google (Gemini), com gerenciamento de taxa de chamadas. |
-| `ExclusionAgent` | Usa o `GeminiAgent` para analisar os dados dos funcionários e identificar quais devem ser excluídos com base em um conjunto de regras. |
-| `VrMensalSqlAgent` | Usa o `GeminiAgent` para gerar dinamicamente a consulta SQL necessária para calcular os benefícios e popular a tabela `vr_mensal`. |
-| `DataExport` | Exporta os dados calculados da tabela `vr_mensal` para um arquivo Excel formatado, usando um modelo. |
-| `Infrastructure` | Orquestra a execução das diferentes fases do pipeline de processamento de dados (download, limpeza, sincronização, etc.). |
+## 🌊 Fluxo de Trabalho
 
-## Pré-requisitos
+O processo é orquestrado em um pipeline sequencial, garantindo a integridade e o processamento correto dos dados.
 
-- Python 3.x
-- Bibliotecas Python:
-  - `pandas`
-  - `psycopg2-binary`
-  - `gdown`
-  - `openpyxl`
-  - `xlrd`
-  - `google-generativeai`
+```mermaid
+flowchart TD
+    A[📥 Download e Extração] --> B[🧹 Limpeza de Colunas];
+    B --> C[🔄 Sincronização com DB PostgreSQL];
+    C --> D[🔗 Consolidação de Tabelas];
+    D --> E[🤖 Análise e Exclusão com IA];
+    E --> F[🧠 Geração de SQL com IA para Cálculo];
+    F --> G[📤 Exportação para Excel];
+    G --> H[📄 Relatório Final];
+```
 
-## Configuração
+1.  **📥 Download e Extração de Dados**: O sistema baixa um arquivo `.zip`, o extrai e padroniza os nomes dos arquivos.
+2.  **🧹 Limpeza de Nomes de Colunas**: As colunas de cada planilha são normalizadas para garantir consistência.
+3.  **🔄 Sincronização com o Banco de Dados**: Os dados limpos são carregados em tabelas no PostgreSQL.
+4.  **🔗 Consolidação de Dados**: Dados de funcionários (ativos, férias, demitidos, etc.) são unificados em uma única tabela.
+5.  **🤖 Análise e Exclusão com IA**: O Agente Gemini analisa os dados e identifica funcionários a serem excluídos com base em regras (ex: diretores, estagiários).
+6.  **🧠 Geração de SQL com IA**: Um segundo Agente Gemini cria dinamicamente a consulta SQL para calcular o valor do VR dos funcionários elegíveis.
+7.  **📤 Exportação de Dados**: Os resultados finais são preenchidos em um template Excel e exportados como um novo relatório.
 
-1.  **Variáveis de Ambiente**: As credenciais do banco de dados e a chave da API do Google devem ser configuradas como segredos no ambiente (por exemplo, usando `userdata` no Google Colab).
-    - `SUPABASE_HOST`
-    - `SUPABASE_NAME`
-    - `SUPABASE_USER`
-    - `SUPABASE_PASS`
-    - `SUPABASE_PORT`
-    - `GOOGLE_API_KEY`
-    - `GOOGLE_GENERATIVE_MODEL` (opcional)
-    - `GOOGLE_GENAI_RATE_LIMIT` (opcional)
-    - `GOOGLE_GENAI_RATE_LIMIT_WINDOW` (opcional)
+## 🏗️ Arquitetura e Módulos
 
-2.  **Configuração do Fluxo de Trabalho**: A execução de cada etapa principal do processo pode ser habilitada ou desabilitada no bloco de execução principal, modificando os dicionários `infra_config`, `exclusion_config`, `vr_sql_agent_config` e `export_config`.
+O projeto é estruturado em classes modulares, cada uma com uma responsabilidade única no pipeline.
 
-## Como Usar
+| Classe                 | Descrição                                                                                                  |
+| :--------------------- | :--------------------------------------------------------------------------------------------------------- |
+| `ZipDownloader`        | Responsável por baixar, extrair e limpar os nomes das planilhas de um arquivo zip.                         |
+| `DatabaseConfig`       | Gerencia a configuração da conexão com o banco de dados.                                                   |
+| `DBUtils`              | Fornece funções de utilidade para interagir com o banco de dados (verificar, descartar tabelas, etc.).      |
+| `ColumnNameCleaner`    | Carrega, limpa e padroniza os nomes das colunas das planilhas.                                             |
+| `DataSync`             | Sincroniza os dados das planilhas com o PostgreSQL, criando tabelas e inserindo os dados.                  |
+| `DataConsolidator`     | Consolida dados de várias tabelas em uma única tabela (`consolidado`).                                     |
+| `DataFrameConsolidado` | Encapsula o acesso ao dataframe da tabela `consolidado`.                                                   |
+| `GeminiAgent`          | Cliente para interagir com a API Gemini, com gerenciamento de taxa de chamadas.                            |
+| `ExclusionAgent`       | Usa o `GeminiAgent` para analisar e identificar funcionários a serem excluídos com base em regras.         |
+| `VrMensalSqlAgent`     | Usa o `GeminiAgent` para gerar a consulta SQL de cálculo dos benefícios.                                   |
+| `DataExport`           | Exporta os dados calculados da tabela `vr_mensal` para um arquivo Excel formatado.                         |
+| `Infrastructure`       | Orquestra a execução de todo o pipeline de processamento de dados.                                         |
 
-1.  Configure as credenciais do banco de dados e da API como segredos.
-2.  Certifique-se de que o arquivo de modelo do Excel (`VR_MENSAL_05.2025.xlsx`) esteja no local esperado (`/content/planilhas/`).
-3.  Execute o script Python. O script executará o fluxo de trabalho completo, desde o download dos dados até a exportação do relatório final.
-4.  O arquivo de saída, `VR MENSAL 05.2025.xlsx`, será salvo no diretório `/content/resultado`.
+## 🚀 Começando
+
+Siga as instruções abaixo para configurar e executar o projeto em seu ambiente.
+
+### Pré-requisitos
+
+* Python 3.9 ou superior
+* Git
+
+### Instalação
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/seu-usuario/seu-repositorio.git](https://github.com/seu-usuario/seu-repositorio.git)
+    cd seu-repositorio
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    pip install pandas psycopg2-binary gdown openpyxl xlrd google-generativeai python-dotenv
+    ```
+
+### Configuração
+
+1.  **Variáveis de Ambiente**: Crie um arquivo `.env` na raiz do projeto para armazenar suas credenciais. Nunca exponha essas chaves publicamente.
+    ```bash
+    # .env
+    SUPABASE_HOST="seu_host"
+    SUPABASE_NAME="seu_banco"
+    SUPABASE_USER="seu_usuario"
+    SUPABASE_PASS="sua_senha"
+    SUPABASE_PORT="sua_porta"
+    GOOGLE_API_KEY="sua_google_api_key"
+    ```
+
+2.  **Configuração do Fluxo**: No script principal, ajuste os dicionários de configuração (`infra_config`, `exclusion_config`, etc.) para habilitar ou desabilitar etapas específicas do pipeline.
+
+3.  **Template Excel**: Certifique-se de que o arquivo de modelo (`VR_MENSAL_05.2025.xlsx`) esteja no diretório esperado (`/content/planilhas/`).
+
+### 🏃‍♂️ Como Usar
+
+Com tudo configurado, execute o script principal para iniciar o processo de automação:
+
+```bash
+python main.py
+```
+O script executará todo o fluxo de trabalho. Ao final, o relatório `VR MENSAL 05.2025.xlsx` será gerado no diretório `/content/resultado`.
+
+## 📂 Estrutura do Projeto
+
+```
+.
+├── content/
+│   ├── planilhas/
+│   │   └── VR_MENSAL_05.2025.xlsx  # Template de entrada
+│   └── resultado/
+│       └── VR MENSAL 05.2025.xlsx  # Relatório final
+├── src/
+│   ├── modules/
+│   │   ├── __init__.py
+│   │   ├── downloader.py
+│   │   ├── database.py
+│   │   ├── cleaner.py
+│   │   └── ... (outros módulos)
+│   └── main.py                     # Script principal
+├── .env                            # Arquivo de credenciais (NÃO versionar)
+├── requirements.txt                # Lista de dependências
+└── README.md
+```
+
+## 🤝 Contribuição
+
+Contribuições são bem-vindas! Se você tiver ideias para melhorias ou encontrar algum problema, sinta-se à vontade para abrir uma *issue* ou enviar um *pull request*.
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
