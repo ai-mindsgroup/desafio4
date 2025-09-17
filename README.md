@@ -4,6 +4,10 @@
 ![Python Version](https://img.shields.io/badge/python-3.9+-blue)
 ![License](https://img.shields.io/badge/license-MIT-purple)
 
+<div align="center">
+  <img src="./assets/Arq-Desafio4.png" alt="Diagrama da Arquitetura do Projeto" width="800"/>
+</div>
+
 ## 🎯 Visão Geral
 
 Este projeto automatiza o cálculo de benefícios de **Vale-Refeição (VR)** para funcionários, orquestrando um pipeline completo de ponta a ponta. A solução extrai dados de múltiplas planilhas, realiza a limpeza e padronização, sincroniza com um banco de dados **PostgreSQL** e utiliza a **API Gemini do Google** para aplicar regras de negócio complexas, identificando funcionários elegíveis e calculando os valores devidos. Ao final, gera um relatório consolidado em uma planilha Excel formatada.
@@ -121,6 +125,8 @@ O script executará todo o fluxo de trabalho. Ao final, o relatório `VR MENSAL 
 
 ```
 .
+├── assets/
+│   └── Arq-Desafio4.png              # Imagem da arquitetura
 ├── content/
 │   ├── planilhas/
 │   │   └── VR_MENSAL_05.2025.xlsx  # Template de entrada
